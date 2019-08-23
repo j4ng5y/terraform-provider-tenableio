@@ -1,8 +1,23 @@
 package resources
 
 import (
+	"encoding/json"
+	"log"
+	"net/http"
+
+	"github.com/j4ng5y/terraform-provider-tenableio/resources/resources"
+
 	"github.com/hashicorp/terraform/helper/schema"
 )
+
+type UserCreateSchema struct {
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	Permissions int    `json:"permissions"`
+	Name        string `json:"name,omitempty"`
+	Email       string `json:"email,omitempty"`
+	Type        string `json:"type"`
+}
 
 func ResourceUser() *schema.Resource {
 	return &schema.Resource{
@@ -42,15 +57,40 @@ func ResourceUser() *schema.Resource {
 
 func resourceUserCreate(d *schema.ResourceData, m interface{}) error {
 	var (
-		endpoint = "https://cloud.tenable.com/users"
-		username = d.Get("username").(string)
-		password = d.Get("passowrd").(string)
+		endpoint    = "https://cloud.tenable.com/users"
+		username    = d.Get("username").(string)
+		password    = d.Get("passowrd").(string)
 		permissions = d.Get("permissions").(int)
-		name = d.Get("name").(string)
-		email = d.Get("email").(string)
-		type = d.Get("type").(string)
+		name        = d.Get("name").(string)
+		email       = d.Get("email").(string)
+		t           = d.Get("type").(string)
 	)
 	d.SetId(username)
+
+	j, err := json.Marshal(&UserCreateSchema{
+		Username:    username,
+		Password:    password,
+		Permissions: permissions,
+		Name:        name,
+		Email:       email,
+		Type:        t})
+	if err != nil {
+		log.Fatal(err)
+	}
+	T := new(resources.TenableIORequest)
+	T.Endpoint = endpoint
+	T.Method = http.MethodGet
+	T.Credentials.AccessKey = d.Get("accessKey").(string)
+	T.Credentials.SecretKey = d.Get("secretKey").(string)
+	T.Body = j
+	resp, err := T.Do()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		log.Fatal(err)
+	}
+
 	return resourceUserRead(d, m)
 }
 
