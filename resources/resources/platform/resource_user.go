@@ -77,12 +77,15 @@ func resourceUserCreate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	T := new(resources.TenableIORequest)
-	T.Endpoint = endpoint
-	T.Method = http.MethodGet
-	T.Credentials.AccessKey = d.Get("accessKey").(string)
-	T.Credentials.SecretKey = d.Get("secretKey").(string)
-	T.Body = j
+	T := &resources.TenableIORequest{
+		Endpoint: endpoint,
+		Method:   http.MethodGet,
+		Credentials: &resources.TenableIORequestCredentials{
+			AccessKey: d.Get("accessKey").(string),
+			SecretKey: d.Get("secretKey").(string),
+		},
+		Body: j,
+	}
 	resp, err := T.Do()
 	if err != nil {
 		log.Fatal(err)

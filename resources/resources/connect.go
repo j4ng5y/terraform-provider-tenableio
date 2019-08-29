@@ -10,11 +10,14 @@ import (
 type TenableIORequest struct {
 	Endpoint    string
 	Method      string
-	Credentials struct {
-		AccessKey string
-		SecretKey string
-	}
-	Body []byte
+	Credentials *TenableIORequestCredentials
+	Body        []byte
+}
+
+// TenableIORequestCredentials is a structure that contains connection credential information
+type TenableIORequestCredentials struct {
+	AccessKey string
+	SecretKey string
 }
 
 // Do performs an action against Tenable.IO
