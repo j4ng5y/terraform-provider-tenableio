@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// TenableIORequest is a structure that contains necessary things to make a Tenable.IO request
 type TenableIORequest struct {
 	Endpoint    string
 	Method      string
@@ -16,6 +17,14 @@ type TenableIORequest struct {
 	Body []byte
 }
 
+// Do performs an action against Tenable.IO
+//
+// Arguments:
+//     None
+//
+// Returns:
+//     (*http.Response): The http responce if no error occurred, nil otherwise
+//     (error): an error if one exists, nil otherwise
 func (T *TenableIORequest) Do() (*http.Response, error) {
 	var (
 		r   *http.Request
