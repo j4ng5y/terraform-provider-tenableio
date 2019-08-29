@@ -23,7 +23,7 @@ func Provider() *schema.Provider {
 		},
 		DataSourcesMap: map[string]*schema.Resource{},
 		ResourcesMap: map[string]*schema.Resource{
-			"tenableio_user": platform.ResourceUser(),
+			"tenableio_user": resources.ResourceUser(),
 		},
 	}
 }
